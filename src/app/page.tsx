@@ -21,6 +21,11 @@ export default function Home() {
   };
 
   const handleSearch = async () => {
+    if (!/^\d+$/.test(sku)) {
+      setError('SKU має містити лише цифри без пробілів');
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
     try {
@@ -36,6 +41,11 @@ export default function Home() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleSkuChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const numericValue = e.target.value.replace(/\D/g, '');
+    setSku(numericValue);
   };
 
   return (
@@ -112,7 +122,7 @@ export default function Home() {
           placeholder: 'sku',
           name: 'search',
           value: sku,
-          onChange: e => setSku(e.target.value),
+          onChange: handleSkuChange,
           onKeyDown: handleKeyDown,
         }}
         searchButton={handleSearch}
@@ -144,7 +154,11 @@ export default function Home() {
         }
       />
       {isLoading && <Loading />}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {error && (
+        <p className="absolute bottom-44 z-50 w-full text-center text-3xl font-semibold text-red-800">
+          {error}
+        </p>
+      )}
     </div>
   );
 }
