@@ -20,7 +20,7 @@ jobs:
 
       - name: Copy files to VPS
         run: |
-          ssh -o StrictHostKeyChecking=no user@your-server-ip << 'EOF'
+          ssh -o StrictHostKeyChecking=no root@88.222.221.252 << 'EOF'
             # Клонувати або оновити репозиторій на сервері
             if [ ! -d "/home/user/app" ]; then
               git clone git@github.com:Teti-web/marmolada-moliera-product-cheked.git /home/user/app
