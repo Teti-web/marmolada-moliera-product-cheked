@@ -1,0 +1,42 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main # Запускається при кожному пуші в основну гілку
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.MARMOLADA_SERVER_NODE }}
+
+      - name: Copy files to VPS
+        run: |
+          ssh -o StrictHostKeyChecking=no user@your-server-ip << 'EOF'
+            # Клонувати або оновити репозиторій на сервері
+            if [ ! -d "/home/user/app" ]; then
+              git clone git@github.com:Teti-web/marmolada-moliera-product-cheked.git /home/user/app
+            else
+              cd /home/user/app
+              git pull origin main
+            fi
+
+            # Перезібрати Docker-образ
+            cd /home/user/app
+            docker build -t marmolada-moliera-product-cheked .
+
+            # Зупинити і видалити старий контейнер
+            docker stop moliera-product-moliera-container-new || true
+            docker rm moliera-product-moliera-container-new || true
+
+            # Запустити новий контейнер
+            docker run -d --restart always -p 8080:3000 --name moliera-product-moliera-container-new marmolada-moliera-product-cheked
+          EOF
