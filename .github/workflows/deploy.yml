@@ -3,7 +3,7 @@ name: Deploy
 on:
   push:
     branches:
-      - main # Запускається при кожному пуші в основну гілку
+      - main
 
 jobs:
   deploy:
@@ -18,10 +18,15 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.MARMOLADA_SERVER_NODE }}
 
-      - name: Copy files to VPS
+      - name: Debug SSH Connection
+        run: ssh -v -o StrictHostKeyChecking=no root@88.222.221.252 "echo 'SSH connection successful'"
+
+      - name: Deploy Code
         run: |
           ssh -o StrictHostKeyChecking=no root@88.222.221.252 << 'EOF'
-            # Клонувати або оновити репозиторій на сервері
+            set -e
+
+            # Clone or pull repository
             if [ ! -d "/home/user/app" ]; then
               git clone git@github.com:Teti-web/marmolada-moliera-product-cheked.git /home/user/app
             else
@@ -29,14 +34,14 @@ jobs:
               git pull origin main
             fi
 
-            # Перезібрати Docker-образ
+            # Rebuild Docker image
             cd /home/user/app
             docker build -t marmolada-moliera-product-cheked .
 
-            # Зупинити і видалити старий контейнер
+            # Stop and remove old container
             docker stop moliera-product-moliera-container-new || true
             docker rm moliera-product-moliera-container-new || true
 
-            # Запустити новий контейнер
+            # Run new container
             docker run -d --restart always -p 8080:3000 --name moliera-product-moliera-container-new marmolada-moliera-product-cheked
           EOF
