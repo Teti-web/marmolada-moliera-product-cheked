@@ -27,7 +27,7 @@ jobs:
           set -e
 
           # Папка для програми
-          APP_DIR="/root/marmolada-moliera-product-cheked"
+          APP_DIR="/root"
 
           # Перевірка існування папки
           if [ ! -d "$APP_DIR" ]; then
