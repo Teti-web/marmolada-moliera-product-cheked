@@ -128,7 +128,7 @@ export default function Home() {
         searchButton={handleSearch}
         title={{ tag: HeadingTag.H2, text: 'Інформація про продукти ' }}
         description={{
-          text: 'За допогою SKU знайдеш більш детальну інформацію про продукт для того щоб створювати замовлення та викупу з Moliery ',
+          text: 'За допогою SKU знайдеш більш детальну інформацію про продукт для того щоб створювати замовлення та викупу з Moliery',
           theme: Theme.PRIMARY,
         }}
         productInfo={
