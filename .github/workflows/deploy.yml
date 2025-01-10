@@ -37,6 +37,9 @@ jobs:
             git pull origin main
           fi
 
+          # Перевірка наявності Docker
+          docker --version || { echo "Docker not installed! Exiting."; exit 1; }
+
           # Побудова Docker-образу
           cd "$APP_DIR"
           docker build -t marmolada-moliera-product-cheked .
@@ -47,4 +50,7 @@ jobs:
 
           # Запуск нового контейнера
           docker run -d --restart always -p 8080:3000 --name moliera-product-moliera-container-new marmolada-moliera-product-cheked
+
+          # Логи контейнера
+          docker logs moliera-product-moliera-container-new
           EOF
