@@ -23,25 +23,28 @@ jobs:
 
       - name: Deploy Code
         run: |
-          ssh -o StrictHostKeyChecking=no root@88.222.221.252 << 'EOF'
-            set -e
+          ssh -o StrictHostKeyChecking=no root@88.222.221.252 <<EOF
+          set -e
 
-            # Clone or pull repository
-            if [ ! -d "/home/user/app" ]; then
-              git clone git@github.com:Teti-web/marmolada-moliera-product-cheked.git /home/user/app
-            else
-              cd /home/user/app
-              git pull origin main
-            fi
+          # Папка для програми
+          APP_DIR="/home/user/app"
 
-            # Rebuild Docker image
-            cd /home/user/app
-            docker build -t marmolada-moliera-product-cheked .
+          # Перевірка існування папки
+          if [ ! -d "$APP_DIR" ]; then
+            git clone git@github.com:Teti-web/marmolada-moliera-product-cheked.git "$APP_DIR"
+          else
+            cd "$APP_DIR"
+            git pull origin main
+          fi
 
-            # Stop and remove old container
-            docker stop moliera-product-moliera-container-new || true
-            docker rm moliera-product-moliera-container-new || true
+          # Побудова Docker-образу
+          cd "$APP_DIR"
+          docker build -t marmolada-moliera-product-cheked .
 
-            # Run new container
-            docker run -d --restart always -p 8080:3000 --name moliera-product-moliera-container-new marmolada-moliera-product-cheked
+          # Зупинка і видалення попереднього контейнера
+          docker stop moliera-product-moliera-container-new || true
+          docker rm moliera-product-moliera-container-new || true
+
+          # Запуск нового контейнера
+          docker run -d --restart always -p 8080:3000 --name moliera-product-moliera-container-new marmolada-moliera-product-cheked
           EOF
